@@ -1,0 +1,43 @@
+<tool id="gwas_qc" name="SNP &amp; Sample QC" version="1.0.0">
+    <description>Filter SNPs and samples by missingness and MAF</description>
+    <command><![CDATA[
+python $__tool_directory__/qc.py
+    --genotypes $genotypes
+    --snp-annot $snp_annot
+    #if $samples is not None
+    --samples $samples
+    #end if
+    --maf $maf
+    --snp-miss $snp_miss
+    --sample-miss $sample_miss
+    --missing-code $missing
+    --out-prefix $out_prefix
+    ]]></command>
+    <inputs>
+        <param name="genotypes" type="data" format="tsv" label="Genotypes file"/>
+        <param name="snp_annot" type="data" format="tsv" label="SNP annotation file"/>
+        <param name="samples" type="data" format="tsv" optional="true" label="Phenotypes/covariates file (optional)"/>
+        <param name="maf" type="float" value="0.01" label="MAF threshold"/>
+        <param name="snp_miss" type="float" value="0.05" label="SNP missingness threshold"/>
+        <param name="sample_miss" type="float" value="0.10" label="Sample missingness threshold"/>
+        <param name="missing" type="text" value="NA" label="Missing value code"/>
+        <param name="out_prefix" type="text" value="qc" label="Output prefix"/>
+    </inputs>
+    <outputs>
+        <data name="filtered_genotypes" format="tsv" from_work_dir="qc.genotypes.filtered.tsv" label="Filtered genotypes"/>
+        <data name="filtered_annot" format="tsv" from_work_dir="qc.snp_annotation.filtered.tsv" label="Filtered SNP annotation"/>
+        <data name="kept_samples" format="tsv" from_work_dir="qc.kept_samples.tsv" label="Kept samples"/>
+        <data name="qc_report" format="txt" from_work_dir="qc.qc_report.txt" label="QC report"/>
+    </outputs>
+    <help>
+<![CDATA[
+**Description:**
+Removes SNPs and samples based on missingness and MAF thresholds. Produces filtered datasets and a QC report.
+
+**Logic:**
+1. Remove SNPs with missingness > threshold
+2. Remove SNPs with MAF < threshold
+3. Remove samples with missingness > threshold
+]]>
+    </help>
+</tool>
