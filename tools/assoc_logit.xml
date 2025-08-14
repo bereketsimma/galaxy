@@ -1,0 +1,41 @@
+<tool id="gwas_assoc_logit" name="Association Test (Logistic Regression)" version="1.0.0">
+    <description>Per-SNP logistic regression: phenotype ~ genotype + covariates</description>
+    <command><![CDATA[
+python $__tool_directory__/assoc_logit.py
+    --genotypes $genotypes
+    --phenos $phenos
+    #if $snp_annot is not None
+    --snp-annot $snp_annot
+    #end if
+    --covariates $covariates
+    --min-maf $min_maf
+    --missing-code $missing
+    #if str($snp_limit) != ''
+    --snp-limit $snp_limit
+    #end if
+    --out $out_file
+    ]]></command>
+    <inputs>
+        <param name="genotypes" type="data" format="tsv" label="Genotypes file"/>
+        <param name="phenos" type="data" format="tsv" label="Phenotypes/covariates file"/>
+        <param name="snp_annot" type="data" format="tsv" optional="true" label="SNP annotation file (optional)"/>
+        <param name="covariates" type="text" value="age,sex" label="Covariates (comma-separated)"/>
+        <param name="min_maf" type="float" value="0.01" label="Minimum MAF"/>
+        <param name="missing" type="text" value="NA" label="Missing value code"/>
+        <param name="snp_limit" type="integer" optional="true" label="Limit number of SNPs (for quick tests)"/>
+        <param name="out_file" type="text" value="assoc_results.tsv" label="Output filename"/>
+    </inputs>
+    <outputs>
+        <data name="assoc" format="tsv" from_work_dir="assoc_results.tsv" label="Association results"/>
+    </outputs>
+    <help>
+<![CDATA[
+**Description:**
+Runs per-SNP logistic regression with phenotype and covariates.
+
+**Logic:**
+- Skip SNPs with low MAF or too few samples.
+- Output beta, SE, z, p-value, and MAF.
+]]>
+    </help>
+</tool>
