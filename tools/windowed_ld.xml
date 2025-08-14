@@ -1,0 +1,54 @@
+<tool id="gwas_windowed_ld" name="Windowed LD Calculator" version="1.0.0">
+    <description>Compute r^2 within a window around a focal SNP</description>
+    <command><![CDATA[
+python $__tool_directory__/windowed_ld.py
+    --genotypes $genotypes
+    --snp-annot $snp_annot
+    #if str($choose) == "by_id"
+    --focal-snp $focal_snp
+    #else
+    --chrom $chrom
+    --center-pos $center_pos
+    #end if
+    --window-kb $window_kb
+    --min-maf $min_maf
+    --missing-code $missing
+    --out-prefix $out_prefix
+    ]]></command>
+    <inputs>
+        <param name="genotypes" type="data" format="tsv" label="Genotypes file"/>
+        <param name="snp_annot" type="data" format="tsv" label="SNP annotation file"/>
+        <conditional name="which_focal">
+            <param name="choose" type="select" label="How to set focal SNP?">
+                <option value="by_id" selected="true">By SNP ID</option>
+                <option value="by_pos">By chromosome and position</option>
+            </param>
+            <when value="by_id">
+                <param name="focal_snp" type="text" label="Focal SNP ID" value="rs101000"/>
+            </when>
+            <when value="by_pos">
+                <param name="chrom" type="text" label="Chromosome"/>
+                <param name="center_pos" type="float" label="Center position"/>
+            </when>
+        </conditional>
+        <param name="window_kb" type="float" value="250" label="Window size (kb)"/>
+        <param name="min_maf" type="float" value="0.01" label="Min MAF"/>
+        <param name="missing" type="text" value="NA" label="Missing value code"/>
+        <param name="out_prefix" type="text" value="ld" label="Output prefix"/>
+    </inputs>
+    <outputs>
+        <data name="ld_matrix" format="tsv" from_work_dir="ld.ld.tsv" label="LD matrix (r^2)"/>
+        <data name="ld_heatmap" format="png" from_work_dir="ld.ld.png" label="LD heatmap"/>
+    </outputs>
+    <help>
+<![CDATA[
+**Description:**
+Computes pairwise r^2 between SNPs in a window around a focal SNP and plots a heatmap.
+
+**Logic:**
+1. Select SNPs within window size around focal SNP.
+2. Compute r^2 for all pairs.
+3. Output LD matrix (TSV) and heatmap (PNG).
+]]>
+    </help>
+</tool>
