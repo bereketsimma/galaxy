@@ -1,0 +1,34 @@
+<tool id="gwas_allele_freq" name="Allele Frequency Calculator" version="1.0.0">
+    <description>Compute genotype counts and per-SNP MAF</description>
+    <command><![CDATA[
+python $__tool_directory__/allele_freq.py
+    --genotypes $genotypes
+    #if $snp_annot is not None
+    --snp-annot $snp_annot
+    #end if
+    #if $sample_subset is not None
+    --sample-subset $sample_subset
+    #end if
+    --missing-code $missing
+    --out $out_file
+    ]]></command>
+    <inputs>
+        <param name="genotypes" type="data" format="tsv" label="Genotypes file"/>
+        <param name="snp_annot" type="data" format="tsv" optional="true" label="SNP annotation file (optional)"/>
+        <param name="sample_subset" type="data" format="tsv" optional="true" label="Sample subset file (optional)"/>
+        <param name="missing" type="text" value="NA" label="Missing value code"/>
+        <param name="out_file" type="text" value="allele_freq.tsv" label="Output filename"/>
+    </inputs>
+    <outputs>
+        <data name="freqs" format="tsv" from_work_dir="allele_freq.tsv" label="Allele frequencies"/>
+    </outputs>
+    <help>
+<![CDATA[
+**Description:**
+Counts genotypes (0,1,2) for each SNP and calculates MAF.
+
+**Logic:**
+- If < 10 non-missing samples for a SNP, MAF = NA.
+]]>
+    </help>
+</tool>
