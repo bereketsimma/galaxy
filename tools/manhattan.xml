@@ -1,0 +1,34 @@
+<tool id="gwas_manhattan" name="Manhattan Plot Generator" version="1.0.0">
+    <description>Plot Manhattan and output top hits</description>
+    <command><![CDATA[
+python $__tool_directory__/manhattan.py
+    --assoc $assoc
+    #if $snp_annot is not None
+    --snp-annot $snp_annot
+    #end if
+    --p-threshold $pthresh
+    --top-n $topn
+    --out-prefix $out_prefix
+    ]]></command>
+    <inputs>
+        <param name="assoc" type="data" format="tsv" label="Association results file"/>
+        <param name="snp_annot" type="data" format="tsv" optional="true" label="SNP annotation file (optional)"/>
+        <param name="pthresh" type="float" value="5e-8" label="P-value threshold"/>
+        <param name="topn" type="integer" value="20" label="Top N hits"/>
+        <param name="out_prefix" type="text" value="manhattan" label="Output prefix"/>
+    </inputs>
+    <outputs>
+        <data name="plot" format="png" from_work_dir="manhattan.png" label="Manhattan plot"/>
+        <data name="top" format="tsv" from_work_dir="manhattan.top_hits.tsv" label="Top hits"/>
+    </outputs>
+    <help>
+<![CDATA[
+**Description:**
+Plots -log10(p) vs chromosome position and marks genome-wide threshold.
+
+**Logic:**
+- Uses chrom/pos from assoc file or merges with annotation file.
+- Outputs PNG plot and TSV of top hits.
+]]>
+    </help>
+</tool>
